@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BCCL+ Coal Analytics & Forecast Dashboard</title>
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- React & Babel CDNs -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-primary: #F8FAFC;
+      --bg-secondary: #F1F5F9;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F8FAFC;
+      --border-color: #E2E8F0;
+      --border-hover: rgba(37, 99, 235, 0.25);
+      --color-blue: #2563EB;
+      --color-light-blue: #3B82F6;
+      --color-blue-glow: rgba(37, 99, 235, 0.12);
+      --color-gold: #F59E0B;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --shadow-premium: 0 10px 30px rgba(15, 23, 42, 0.05);
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: 
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+        #090D16;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Layout & Utilities */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navbar */
+    .navbar {
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      height: 40px;
+      width: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-plus {
+      color: #10B981;
+      font-weight: 800;
+    }
+
+    .nav-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10B981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.5; }
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 48px 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .hero-title span {
+      color: #10B981;
+    }
+
+    .hero-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 24px;
+      max-width: 580px;
+    }
+
+    .hero-search-bar {
+      display: flex;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 6px;
+      max-width: 480px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .hero-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      padding: 0 16px;
+      font-size: 0.95rem;
+    }
+
+    .hero-search-btn {
+      background: #10B981;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease;
+    }
+
+    .hero-search-btn:hover {
+      background: #34D399;
+    }
+
+    .hero-meta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .hero-meta-badge svg {
+      color: #10B981;
+    }
+
+    /* Highlights Cards Column */
+    .hero-highlights-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Highlights Card */
+    .highlight-card {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-premium);
+    }
+
+    .highlight-badge {
+      background: rgba(37, 99, 235, 0.05);
+      border: 1px solid rgba(37, 99, 235, 0.1);
+      color: #10B981;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .highlight-title {
+      font-size: 2.25rem;
+      font-family: var(--font-display);
+      margin-bottom: 4px;
+      color: #10B981;
+    }
+
+    .highlight-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .highlight-btn {
+      background: transparent;
+      border: 1px solid #10B981;
+      color: #10B981;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .highlight-btn:hover {
+      background: #10B981;
+      color: #fff;
+      box-shadow: 0 0 15px var(--color-blue-glow);
+    }
+
+    /* Info Features Strip */
+    .features-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      color: #10B981;
+      flex-shrink: 0;
+      background: rgba(37, 99, 235, 0.05);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    .feature-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .feature-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    /* Section Header */
+    .section-header {
+      margin: 48px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .section-title-group h2 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .section-title-group p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Category Grid */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .category-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 6px rgba(15, 23, 42, 0.01);
+    }
+
+    .category-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.04);
+    }
+
+    .category-card.active {
+      border-color: #10B981;
+      background: rgba(37, 99, 235, 0.03);
+    }
+
+    .category-card-icon {
+      background: rgba(15, 23, 42, 0.02);
+      padding: 12px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .category-card.active .category-card-icon {
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    .category-card-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .category-card.active .category-card-title {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Main Dashboard Layout */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .main-panel {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-premium);
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .chart-title-block h3 {
+      font-family: var(--font-sans);
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+
+    .chart-title-block p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .toggle-group {
+      display: inline-flex;
+      background: rgba(15, 23, 42, 0.02);
+      border: 1px solid var(--border-color);
+      padding: 4px;
+      border-radius: 999px;
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 8px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn.active {
+      background: #10B981;
+      color: #fff;
+    }
+
+    /* SVG Chart */
+    .chart-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .chart-svg {
+      overflow: visible;
+      width: 100%;
+    }
+
+    /* Custom Tooltip */
+    .chart-tooltip {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+      pointer-events: none;
+      z-index: 10;
+      min-width: 140px;
+      color: var(--text-primary);
+      transition: all 0.1s ease;
+    }
+
+    .tooltip-date {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .tooltip-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #10B981;
+    }
+
+    .tooltip-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Sidebar Details Card */
+    .side-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-premium);
+    }
+
+    .side-card-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .side-metric-item {
+      border-top: 1px solid var(--border-color);
+      padding: 16px 0;
+    }
+
+    .side-metric-item:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .side-metric-label {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .side-metric-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .side-metric-trend {
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trend-up { color: #10B981; }
+    .trend-down { color: #EF4444; }
+
+    .side-card-desc {
+      margin-top: 16px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      background: rgba(37, 99, 235, 0.02);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      border-left: 3px solid #10B981;
+    }
+
+    /* Simulator CSS */
+    .simulator-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-premium);
+    }
+
+    .simulator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 24px;
+    }
+
+    .sliders-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .slider-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .slider-label-name {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .slider-label-val {
+      color: #10B981;
+      font-weight: 600;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.06);
+      height: 6px;
+      border-radius: 999px;
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #10B981;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--color-blue-glow);
+      transition: all 0.2s ease;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #34D399;
+    }
+
+    .results-panel {
+      background: rgba(37, 99, 235, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .result-box-top {
+      margin-bottom: 20px;
+    }
+
+    .result-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .result-value-glowing {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #10B981;
+      text-shadow: 0 0 20px rgba(37, 99, 235, 0.05);
+      font-family: var(--font-sans);
+    }
+
+    .result-equation {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      word-break: break-all;
+      margin-top: 16px;
+      border-left: 2px solid #10B981;
+    }
+
+    .simulator-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .sim-btn-primary {
+      flex: 1;
+      background: #10B981;
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .sim-btn-primary:hover {
+      background: #34D399;
+      box-shadow: 0 0 10px var(--color-blue-glow);
+    }
+
+    .sim-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .sim-btn-secondary:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    /* Tables & Datagrid */
+    .table-section {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-premium);
+    }
+
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 16px;
+    }
+
+    .table-search {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      outline: none;
+      color: var(--text-primary);
+      width: 260px;
+      font-size: 0.88rem;
+      transition: border 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+    }
+
+    .table-search:focus {
+      border-color: var(--border-hover);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      color: #10B981;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    tbody tr {
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(37, 99, 235, 0.02);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .th-num, .td-num {
+      text-align: right;
+    }
+
+    .badge-actual {
+      background: rgba(15, 23, 42, 0.03);
+      border: 1px solid var(--border-color);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state {
+      color: var(--text-secondary);
+      font-style: italic;
+      padding: 24px;
+      text-align: center;
+    }
+
+    /* Modal CSS */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: min(580px, 90vw);
+      padding: 32px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      line-height: 1;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .modal-textarea {
+      width: 100%;
+      height: 140px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      outline: none;
+      font-family: monospace;
+      font-size: 0.82rem;
+      background: #090D16;
+      resize: none;
+    }
+
+    .modal-textarea:focus {
+      border-color: #10B981;
+    }
+
+    .modal-file-label {
+      border: 1px dashed #10B981;
+      background: rgba(37, 99, 235, 0.01);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: #10B981;
+      display: block;
+      transition: all 0.2s ease;
+    }
+
+    .modal-file-label:hover {
+      background: rgba(37, 99, 235, 0.03);
+      border-color: #34D399;
+    }
+
+    .modal-error {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: #DC2626;
+      font-size: 0.82rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    .modal-success {
+      background: #ECFDF5;
+      border: 1px solid #6EE7B7;
+      color: #059669;
+      font-size: 0.82rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border-color);
+      padding: 32px 0 48px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .footer a {
+      color: #10B981;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .features-strip { grid-template-columns: 1fr; gap: 16px; }
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .simulator-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Injected Data Placeholders -->
+  <script>
+    window.__BCCL_DATASET__ = [{"year": 2009.0, "production_mt": null, "sale_value_of_production": null, "profit_before_tax": 3399.13, "profit_after_tax": 2920.29}, {"year": 2010.0, "production_mt": null, "sale_value_of_production": 2642.75, "profit_before_tax": 4515.15, "profit_after_tax": 4329.5}, {"year": 2011.0, "production_mt": null, "sale_value_of_production": 6157.11, "profit_before_tax": 1135.7, "profit_after_tax": 1093.69}, {"year": 2012.0, "production_mt": 30.2, "sale_value_of_production": 7201.33, "profit_before_tax": 822.36, "profit_after_tax": 822.36}, {"year": 2013.0, "production_mt": 31.21, "sale_value_of_production": 8359.73, "profit_before_tax": 1718.545, "profit_after_tax": 1603.93}, {"year": 2014.0, "production_mt": 32.61, "sale_value_of_production": 8287.99, "profit_before_tax": 2119.23, "profit_after_tax": 2089.01}, {"year": 2015.0, "production_mt": 34.51, "sale_value_of_production": 8041.73, "profit_before_tax": 1157.64, "profit_after_tax": 1154.22}, {"year": 2016.0, "production_mt": 35.86, "sale_value_of_production": 8715.38, "profit_before_tax": 768.85, "profit_after_tax": 671.06}, {"year": 2017.0, "production_mt": 37.04, "sale_value_of_production": 8622.36, "profit_before_tax": -148.48, "profit_after_tax": -246.64}, {"year": 2018.0, "production_mt": 32.61, "sale_value_of_production": 7299.79, "profit_before_tax": -1935.41, "profit_after_tax": -2057.38}, {"year": 2019.0, "production_mt": 31.04, "sale_value_of_production": 9377.68, "profit_before_tax": 691.9, "profit_after_tax": 557.05}, {"year": 2020.0, "production_mt": 27.73, "sale_value_of_production": 8472.0, "profit_before_tax": 812.51, "profit_after_tax": 706.34}, {"year": 2021.0, "production_mt": 24.66, "sale_value_of_production": 6938.34, "profit_before_tax": -1577.06, "profit_after_tax": -1202.48}, {"year": 2022.0, "production_mt": 30.51, "sale_value_of_production": 4631.635, "profit_before_tax": 191.31, "profit_after_tax": 111.62}, {"year": 2023.0, "production_mt": 36.179, "sale_value_of_production": 12309.0, "profit_before_tax": 530.19, "profit_after_tax": 664.78}, {"year": 2024.0, "production_mt": 41.096, "sale_value_of_production": null, "profit_before_tax": 2091.67, "profit_after_tax": 1564.46}];
+    window.__BCCL_SUMMARY__ = [{"metric": "production_mt", "training_rows": 13, "test_years": [2023, 2024], "mae": 1.689, "rmse": 1.747, "forecast_year": 2025, "forecast_value": 39.308}, {"metric": "profit_after_tax", "training_rows": 16, "test_years": [2023, 2024], "mae": 2285.129, "rmse": 2430.158, "forecast_year": 2025, "forecast_value": 828.367}];
+    window.__GENERATED_AT__ = "2026-08-18 00:31";
+  </script>
+
+  <!-- React Application -->
+  <script type="text/babel">
+    const dataset = window.__BCCL_DATASET__;
+    const summary = window.__BCCL_SUMMARY__;
+    const generatedAt = window.__GENERATED_AT__;
+
+    // Cache initial data values for restoring defaults
+    const INITIAL_DATASET = [...dataset];
+    const INITIAL_SUMMARY = [...summary];
+
+    const METRIC_META = {
+      production_mt: {
+        label: "Coal Production",
+        unit: "MT",
+        color: "#2563EB", // Royal Blue
+        accent: "#3B82F6", // Light Blue
+        description: "Production is the cleaner signal right now because the yearly operational series is much more consistent across the reports."
+      },
+      profit_after_tax: {
+        label: "Profit After Tax",
+        unit: "INR Cr",
+        color: "#0284C7", // Deep Sky Blue (High contrast)
+        accent: "#0EA5E9", // Sky Blue
+        description: "Profit is still noisy and accounting-sensitive, so this forecast should be treated as directional rather than final."
+      }
+    };
+
+    /* Matrix Math Utility Functions in Javascript */
+    
+    // Gaussian Elimination system solver for Ax = b
+    function solveLinearSystem(A, b) {
+      const n = b.length;
+      for (let i = 0; i < n; i++) {
+        let maxEl = Math.abs(A[i][i]);
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+          if (Math.abs(A[k][i]) > maxEl) {
+            maxEl = Math.abs(A[k][i]);
+            maxRow = k;
+          }
+        }
+        for (let k = i; k < n; k++) {
+          const tmp = A[maxRow][k];
+          A[maxRow][k] = A[i][k];
+          A[i][k] = tmp;
+        }
+        const tmp = b[maxRow];
+        b[maxRow] = b[i];
+        b[i] = tmp;
+        for (let k = i + 1; k < n; k++) {
+          const c = -A[k][i] / A[i][i];
+          for (let j = i; j < n; j++) {
+            if (i === j) {
+              A[k][j] = 0;
+            } else {
+              A[k][j] += c * A[i][j];
+            }
+          }
+          b[k] += c * b[i];
+        }
+      }
+      const x = new Array(n).fill(0);
+      for (let i = n - 1; i >= 0; i--) {
+        x[i] = b[i] / A[i][i];
+        for (let k = i - 1; k >= 0; k--) {
+          b[k] -= A[k][i] * x[i];
+        }
+      }
+      return x;
+    }
+
+    // Fits multiple linear regression via Ordinary Least Squares
+    function fitRegression(X, y) {
+      const n = X.length;
+      const p = X[0].length;
+      const XtX = Array.from({ length: p }, () => new Array(p).fill(0));
+      const Xty = new Array(p).fill(0);
+      
+      for (let i = 0; i < n; i++) {
+        const row = X[i];
+        const val = y[i];
+        for (let r = 0; r < p; r++) {
+          for (let c = 0; c < p; c++) {
+            XtX[r][c] += row[r] * row[c];
+          }
+          Xty[r] += row[r] * val;
+        }
+      }
+      return solveLinearSystem(XtX, Xty);
+    }
+
+    // Autoregressive feature builder
+    function makeFeaturesJS(series) {
+      const records = [];
+      for (let i = 2; i < series.length; i++) {
+        const target = series[i];
+        const lag1 = series[i - 1];
+        const lag2 = series[i - 2];
+        if (i < 3) continue; // need 3 points for rolling mean
+        const rolling = (series[i - 1] + series[i - 2] + series[i - 3]) / 3;
+        records.push({
+          target: target,
+          features: [1.0, lag1, lag2, rolling, parseFloat(i)],
+          index: i
+        });
+      }
+      return records;
+    }
+
+    // Run training and testing, returning a summary object
+    function fitMetricModelJS(df, metric) {
+      const metric_df = df
+        .filter(row => row.year !== null && row[metric] !== null)
+        .map(row => ({ year: Number(row.year), value: Number(row[metric]) }))
+        .sort((a, b) => a.year - b.year);
+      
+      if (metric_df.length < 6) return null;
+      
+      const values = metric_df.map(r => r.value);
+      const feature_records = makeFeaturesJS(values);
+      if (feature_records.length < 4) return null;
+      
+      const test_size = feature_records.length >= 6 ? 2 : 1;
+      const train = feature_records.slice(0, -test_size);
+      const test = feature_records.slice(-test_size);
+      
+      // Train
+      const trainX = train.map(r => r.features);
+      const trainY = train.map(r => r.target);
+      const coeffs_train = fitRegression(trainX, trainY);
+      
+      // Test Predict & Evaluate
+      let abs_error_sum = 0;
+      let sq_error_sum = 0;
+      for (let i = 0; i < test.length; i++) {
+        const actual = test[i].target;
+        const X_test = test[i].features;
+        const predicted = coeffs_train.reduce((sum, c, idx) => sum + c * X_test[idx], 0);
+        abs_error_sum += Math.abs(actual - predicted);
+        sq_error_sum += (actual - predicted) * (actual - predicted);
+      }
+      const mae = abs_error_sum / test.length;
+      const rmse = Math.sqrt(sq_error_sum / test.length);
+      
+      // Fit full
+      const fullX = feature_records.map(r => r.features);
+      const fullY = feature_records.map(r => r.target);
+      const coeffs_full = fitRegression(fullX, fullY);
+      
+      // Predict next year
+      const next_lag1 = values[values.length - 1];
+      const next_lag2 = values[values.length - 2];
+      const next_rolling = (values[values.length - 1] + values[values.length - 2] + values[values.length - 3]) / 3;
+      const next_trend = values.length;
+      const next_X = [1.0, next_lag1, next_lag2, next_rolling, parseFloat(next_trend)];
+      
+      const next_prediction = coeffs_full.reduce((sum, c, idx) => sum + c * next_X[idx], 0);
+      const next_year = Math.max(...metric_df.map(r => r.year)) + 1;
+      
+      const test_years = test.map(r => metric_df[r.index].year);
+      
+      return {
+        metric: metric,
+        training_rows: metric_df.length,
+        test_years: test_years,
+        mae: Number(mae.toFixed(3)),
+        rmse: Number(rmse.toFixed(3)),
+        forecast_year: next_year,
+        forecast_value: Number(next_prediction.toFixed(3)),
+        coefficients: {
+          intercept: coeffs_full[0],
+          lag1: coeffs_full[1],
+          lag2: coeffs_full[2],
+          rolling_mean_3: coeffs_full[3],
+          trend: coeffs_full[4]
+        }
+      };
+    }
+
+    // CSV text parser
+    function parseCSV(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+      if (lines.length < 2) throw new Error("CSV must contain a header and at least one data row");
+      
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const yearIdx = headers.indexOf('year');
+      const prodIdx = headers.indexOf('production_mt');
+      const saleIdx = headers.indexOf('sale_value_of_production');
+      const pbtIdx = headers.indexOf('profit_before_tax');
+      const patIdx = headers.indexOf('profit_after_tax');
+      
+      if (yearIdx === -1) throw new Error("CSV header must contain a 'year' column");
+      
+      const parsedRows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim());
+        if (cols.length < headers.length) continue;
+        
+        const year = parseFloat(cols[yearIdx]);
+        if (isNaN(year)) continue;
+        
+        parsedRows.push({
+          year: year,
+          production_mt: prodIdx !== -1 && cols[prodIdx] ? parseFloat(cols[prodIdx]) : null,
+          sale_value_of_production: saleIdx !== -1 && cols[saleIdx] ? parseFloat(cols[saleIdx]) : null,
+          profit_before_tax: pbtIdx !== -1 && cols[pbtIdx] ? parseFloat(cols[pbtIdx]) : null,
+          profit_after_tax: patIdx !== -1 && cols[patIdx] ? parseFloat(cols[patIdx]) : null,
+        });
+      }
+      
+      if (parsedRows.length < 6) throw new Error("At least 6 valid data rows are required to run prediction pipelines");
+      return parsedRows.sort((a, b) => a.year - b.year);
+    }
+
+    function formatValue(value, digits = 3) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "N/A";
+      return Number(value).toLocaleString('en-IN', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    }
+
+    function niceMetricName(metric) {
+      return METRIC_META[metric]?.label || metric;
+    }
+
+    /* Trend Chart Component */
+    function TrendChart({ metric, datasetState, summaryState, customPoint }) {
+      const meta = METRIC_META[metric];
+      
+      const seriesFor = (m) => {
+        return datasetState
+          .filter((row) => row.year !== null && row[m] !== null)
+          .map((row) => ({
+            year: Number(row.year),
+            value: Number(row[m]),
+            forecast: false,
+          }));
+      };
+
+      const buildChartModel = (m) => {
+        const history = seriesFor(m);
+        const info = summaryState.find((item) => item.metric === m);
+        if (!history.length || !info) return null;
+        const forecastPoint = {
+          year: Number(info.forecast_year),
+          value: Number(info.forecast_value),
+          forecast: true,
+        };
+        return { history, forecastPoint, points: [...history, forecastPoint], info };
+      };
+
+      const model = buildChartModel(metric);
+      const [hovered, setHovered] = React.useState(null);
+      if (!model) return <div className="empty-state">No chart data available.</div>;
+
+      const width = 820;
+      const height = 360;
+      
+      const chartPoints = [...model.points];
+      if (customPoint && customPoint.metric === metric) {
+        chartPoints[chartPoints.length - 1] = {
+          year: customPoint.year,
+          value: customPoint.value,
+          forecast: true,
+          isCustom: true
+        };
+      }
+
+      const { margin, x, y, yTicks } = chartGeometry(chartPoints, width, height);
+      
+      const actualsOnly = chartPoints.filter(p => !p.forecast);
+      const forecastPoint = chartPoints[chartPoints.length - 1];
+      const lastActual = actualsOnly[actualsOnly.length - 1];
+
+      const historyPath = getBezierCurvePath(actualsOnly, x, y);
+      const forecastPath = `M ${x(lastActual.year)} ${y(lastActual.value)} L ${x(forecastPoint.year)} ${y(forecastPoint.value)}`;
+      const areaPath = `${historyPath} L ${x(lastActual.year)} ${height - margin.bottom} L ${x(actualsOnly[0].year)} ${height - margin.bottom} Z`;
+
+      return (
+        <div style={{ position: 'relative' }}>
+          <svg viewBox={`0 0 ${width} ${height}`} className="chart-svg">
+            <defs>
+              <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={meta.color} stopOpacity="0.12" />
+                <stop offset="100%" stopColor={meta.color} stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {yTicks.map((tick, i) => (
+              <g key={`grid-${i}`}>
+                <line x1={margin.left} y1={tick.y} x2={width - margin.right} y2={tick.y} stroke="rgba(15, 23, 42, 0.05)" />
+                <text x={margin.left - 12} y={tick.y + 4} textAnchor="end" fontSize="11" fill="var(--text-secondary)">
+                  {tick.value.toFixed(1)}
+                </text>
+              </g>
+            ))}
+
+            <line x1={margin.left} y1={height - margin.bottom} x2={width - margin.right} y2={height - margin.bottom} stroke="rgba(15, 23, 42, 0.15)" />
+            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={height - margin.bottom} stroke="rgba(15, 23, 42, 0.15)" />
+
+            <path d={areaPath} fill="url(#chart-grad)" />
+            <path d={historyPath} fill="none" stroke={meta.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path d={forecastPath} fill="none" stroke={forecastPoint.isCustom ? "var(--color-gold)" : meta.color} strokeWidth="3" strokeDasharray="6 6" strokeLinecap="round" />
+
+            {actualsOnly.map((point) => (
+              <circle
+                key={`point-${point.year}`}
+                cx={x(point.year)}
+                cy={y(point.value)}
+                r={hovered?.year === point.year ? "7" : "4.5"}
+                fill="var(--bg-card)"
+                stroke={meta.color}
+                strokeWidth="2.5"
+                style={{ transition: 'r 0.15s ease' }}
+                onMouseEnter={() => setHovered(point)}
+                onMouseLeave={() => setHovered(null)}
+              />
+            ))}
+
+            <circle
+              cx={x(forecastPoint.year)}
+              cy={y(forecastPoint.value)}
+              r={hovered?.year === forecastPoint.year ? "8" : "6"}
+              fill="var(--bg-card)"
+              stroke={forecastPoint.isCustom ? "var(--color-gold)" : meta.color}
+              strokeWidth="3"
+              style={{ transition: 'r 0.15s ease' }}
+              onMouseEnter={() => setHovered(forecastPoint)}
+              onMouseLeave={() => setHovered(null)}
+            />
+
+            {chartPoints.map((point, i) => (
+              <text key={`tick-${i}`} x={x(point.year)} y={height - 18} textAnchor="middle" fontSize="11" fill="var(--text-secondary)">
+                {point.year}
+              </text>
+            ))}
+          </svg>
+
+          {hovered ? (
+            <div 
+              className="chart-tooltip"
+              style={{
+                left: `${(x(hovered.year) / width) * 100}%`,
+                top: `${(y(hovered.value) / height) * 100 - 24}%`,
+                transform: 'translate(-50%, -100%)'
+              }}
+            >
+              <div className="tooltip-date">
+                {hovered.forecast ? (hovered.isCustom ? "Simulated Projection" : "Model Prediction") : "Historical Actual"} · FY {hovered.year}
+              </div>
+              <div className="tooltip-val" style={{ color: hovered.isCustom ? 'var(--color-gold)' : meta.color }}>
+                {formatValue(hovered.value)} {meta.unit}
+              </div>
+              <div className="tooltip-desc">
+                {hovered.forecast ? "Based on autoregressive fit" : `Reported coal metric for ${hovered.year}`}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      );
+    }
+
+    /* Insight Panel Component */
+    function InsightPanel({ metric, datasetState, summaryState, customPoint }) {
+      const meta = METRIC_META[metric];
+      
+      const seriesFor = (m) => {
+        return datasetState
+          .filter((row) => row.year !== null && row[m] !== null)
+          .map((row) => ({
+            year: Number(row.year),
+            value: Number(row[m]),
+            forecast: false,
+          }));
+      };
+
+      const buildChartModel = (m) => {
+        const history = seriesFor(m);
+        const info = summaryState.find((item) => item.metric === m);
+        if (!history.length || !info) return null;
+        const forecastPoint = {
+          year: Number(info.forecast_year),
+          value: Number(info.forecast_value),
+          forecast: true,
+        };
+        return { history, forecastPoint, points: [...history, forecastPoint], info };
+      };
+
+      const model = buildChartModel(metric);
+      if (!model) return null;
+      
+      const latest = model.history[model.history.length - 1];
+      const prior = model.history[model.history.length - 2];
+      const delta = latest && prior ? latest.value - prior.value : null;
+      
+      const isCustom = customPoint && customPoint.metric === metric;
+      const forecastVal = isCustom ? customPoint.value : model.info.forecast_value;
+      const forecastYr = isCustom ? customPoint.year : model.info.forecast_year;
+
+      return (
+        <aside className="side-card">
+          <div className="side-card-title">Story Outlook Snapshot</div>
+          
+          <div className="side-metric-item">
+            <div className="side-metric-label">Latest reported value</div>
+            <div className="side-metric-value">{formatValue(latest?.value)} {meta.unit}</div>
+          </div>
+          
+          <div className="side-metric-item">
+            <div className="side-metric-label">Year-over-year change</div>
+            <div className="side-metric-value">
+              {delta === null ? "N/A" : `${delta >= 0 ? "+" : ""}${formatValue(delta)} ${meta.unit}`}
+            </div>
+            <div className="side-metric-trend">
+              {delta >= 0 ? (
+                <span className="trend-up" style={{ color: 'var(--color-blue)' }}>▲ Increasing Trend</span>
+              ) : (
+                <span className="trend-down" style={{ color: '#EF4444' }}>▼ Decreasing Trend</span>
+              )}
+            </div>
+          </div>
+          
+          <div className="side-metric-item">
+            <div className="side-metric-label">
+              {isCustom ? "Custom Simulated Forecast" : "Trained Model Forecast"}
+            </div>
+            <div className="side-metric-value" style={{ color: isCustom ? 'var(--color-gold)' : 'var(--color-blue)' }}>
+              FY {forecastYr} · {formatValue(forecastVal)} {meta.unit}
+            </div>
+          </div>
+
+          <div className="side-card-desc" style={{ borderLeftColor: 'var(--color-blue)' }}>
+            {isCustom ? (
+              <strong>Custom Scenario: This forecast is generated from the simulator dashboard controls. Adjust sliders below to recalculate.</strong>
+            ) : (
+              meta.description
+            )}
+          </div>
+        </aside>
+      );
+    }
+
+    /* Scenario Simulator Card */
+    function SimulatorCard({ metric, datasetState, summaryState, customPoint, onCommit, onReset }) {
+      const meta = METRIC_META[metric];
+      const info = summaryState.find((item) => item.metric === metric);
+      if (!info) return null;
+
+      const c = info.coefficients;
+
+      // Extract actual model base inputs
+      const seriesFor = (m) => {
+        return datasetState
+          .filter((row) => row.year !== null && row[m] !== null)
+          .map((row) => ({
+            year: Number(row.year),
+            value: Number(row[m]),
+            forecast: false,
+          }));
+      };
+
+      const history = seriesFor(metric);
+      const lastVal = history[history.length - 1]?.value || 0;
+      const prevVal = history[history.length - 2]?.value || 0;
+      const threeYrAvg = history.slice(-3).reduce((sum, item) => sum + item.value, 0) / 3;
+      const nextTrendStep = history.length;
+
+      // React Sliders states
+      const [lag1, setLag1] = React.useState(lastVal);
+      const [lag2, setLag2] = React.useState(prevVal);
+      const [rollMean, setRollMean] = React.useState(threeYrAvg);
+      const [trend, setTrend] = React.useState(nextTrendStep);
+
+      // Reset values if metric or dataset changes
+      React.useEffect(() => {
+        setLag1(lastVal);
+        setLag2(prevVal);
+        setRollMean(threeYrAvg);
+        setTrend(nextTrendStep);
+      }, [metric, datasetState]);
+
+      // Calculate forecast: Intercept + c1*lag1 + c2*lag2 + c3*rollMean + c4*trend
+      const predictedValue = c.intercept + (lag1 * c.lag1) + (lag2 * c.lag2) + (rollMean * c.rolling_mean_3) + (trend * c.trend);
+
+      // Min/Max bounds for sliders
+      const bounds = metric === "production_mt" ? {
+        lag1: { min: 0, max: 60, step: 0.1 },
+        lag2: { min: 0, max: 60, step: 0.1 },
+        roll: { min: 0, max: 60, step: 0.1 },
+        trend: { min: 0, max: 25, step: 1 }
+      } : {
+        lag1: { min: -3000, max: 5000, step: 10 },
+        lag2: { min: -3000, max: 5000, step: 10 },
+        roll: { min: -3000, max: 5000, step: 10 },
+        trend: { min: 0, max: 25, step: 1 }
+      };
+
+      const handleCommit = () => {
+        onCommit({
+          metric,
+          year: info.forecast_year,
+          value: predictedValue
+        });
+      };
+
+      const handleReset = () => {
+        setLag1(lastVal);
+        setLag2(prevVal);
+        setRollMean(threeYrAvg);
+        setTrend(nextTrendStep);
+        onReset();
+      };
+
+      return (
+        <section className="simulator-card" id="simulator-section">
+          <div className="section-title-group">
+            <h2>Interactive Scenario Simulator</h2>
+            <p>Modify the regression variables to recalculate predictions in real-time</p>
+          </div>
+
+          <div className="simulator-grid">
+            <div className="sliders-panel">
+              <div className="slider-item">
+                <div className="slider-label-row">
+                  <span className="slider-label-name">Lag 1 (Previous Year Value)</span>
+                  <span className="slider-label-val" style={{ color: 'var(--color-blue)' }}>{formatValue(lag1, 2)} {meta.unit}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min={bounds.lag1.min} 
+                  max={bounds.lag1.max} 
+                  step={bounds.lag1.step} 
+                  value={lag1}
+                  onChange={(e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) setLag1(v); }}
+                />
+              </div>
+
+              <div className="slider-item">
+                <div className="slider-label-row">
+                  <span className="slider-label-name">Lag 2 (Two Years Ago Value)</span>
+                  <span className="slider-label-val" style={{ color: 'var(--color-blue)' }}>{formatValue(lag2, 2)} {meta.unit}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min={bounds.lag2.min} 
+                  max={bounds.lag2.max} 
+                  step={bounds.lag2.step} 
+                  value={lag2}
+                  onChange={(e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) setLag2(v); }}
+                />
+              </div>
+
+              <div className="slider-item">
+                <div className="slider-label-row">
+                  <span className="slider-label-name">Rolling Mean (3-Year Average)</span>
+                  <span className="slider-label-val" style={{ color: 'var(--color-blue)' }}>{formatValue(rollMean, 2)} {meta.unit}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min={bounds.roll.min} 
+                  max={bounds.roll.max} 
+                  step={bounds.roll.step} 
+                  value={rollMean}
+                  onChange={(e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) setRollMean(v); }}
+                />
+              </div>
+
+              <div className="slider-item">
+                <div className="slider-label-row">
+                  <span className="slider-label-name">Model Trend Step (T-Index)</span>
+                  <span className="slider-label-val" style={{ color: 'var(--color-blue)' }}>t = {trend}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min={bounds.trend.min} 
+                  max={bounds.trend.max} 
+                  step={bounds.trend.step} 
+                  value={trend}
+                  onChange={(e) => { const v = parseInt(e.target.value); if (!isNaN(v)) setTrend(v); }}
+                />
+              </div>
+            </div>
+
+            <div className="results-panel" style={{ background: 'rgba(37, 99, 235, 0.02)' }}>
+              <div className="result-box-top">
+                <div className="result-title">Simulated FY {info.forecast_year} Forecast</div>
+                <div className="result-value-glowing" style={{ color: 'var(--color-blue)' }}>
+                  {formatValue(predictedValue, 3)} {meta.unit}
+                </div>
+                <div className="result-equation" style={{ borderLeftColor: 'var(--color-blue)' }}>
+                  <strong>Equation:</strong><br />
+                  y = {c.intercept.toFixed(4)} + ({c.lag1.toFixed(4)} * lag1) + ({c.lag2.toFixed(4)} * lag2) + ({c.rolling_mean_3.toFixed(4)} * rolling_avg) + ({c.trend.toFixed(4)} * t)
+                </div>
+              </div>
+
+              <div className="simulator-actions">
+                <button className="sim-btn-primary" style={{ backgroundColor: 'var(--color-blue)' }} onClick={handleCommit}>
+                  Commit to Chart View
+                </button>
+                <button className="sim-btn-secondary" onClick={handleReset}>
+                  Reset to Baseline
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* Main App Container */
+    function App() {
+      const [datasetState, setDatasetState] = React.useState(dataset);
+      const [summaryState, setSummaryState] = React.useState(summary);
+      
+      const [metric, setMetric] = React.useState("production_mt");
+      const [searchQuery, setSearchQuery] = React.useState("");
+      const [customForecast, setCustomForecast] = React.useState(null);
+      const [logoError, setLogoError] = React.useState(false);
+
+      // Modal states
+      const [isUploadOpen, setIsUploadOpen] = React.useState(false);
+      const [uploadText, setUploadText] = React.useState("");
+      const [uploadError, setUploadError] = React.useState(null);
+      const [uploadSuccess, setUploadSuccess] = React.useState(false);
+
+      const activeSummary = summaryState.find((item) => item.metric === metric) || summaryState[0];
+
+      // Handle search bar from Hero section
+      const handleSearchSubmit = (yearText) => {
+        setSearchQuery(yearText);
+        const element = document.getElementById("dataset-table-section");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      };
+
+      // Recalculates models when new CSV is submitted
+      const handleCSVSubmit = (e) => {
+        e.preventDefault();
+        setUploadError(null);
+        setUploadSuccess(false);
+        try {
+          const parsed = parseCSV(uploadText);
+          
+          // Fit both models in JS
+          const prodSummary = fitMetricModelJS(parsed, "production_mt");
+          const profitSummary = fitMetricModelJS(parsed, "profit_after_tax");
+          
+          if (!prodSummary || !profitSummary) {
+            throw new Error("Unable to fit regression equations. Ensure you have at least 6 years of actual reported data.");
+          }
+          
+          // Update global state
+          setDatasetState(parsed);
+          setSummaryState([prodSummary, profitSummary]);
+          setCustomForecast(null);
+          setUploadSuccess(true);
+          
+          setTimeout(() => {
+            setIsUploadOpen(false);
+            setUploadSuccess(false);
+            setUploadText("");
+          }, 1500);
+        } catch (err) {
+          setUploadError(err.message);
+        }
+      };
+
+      const handleRestoreDefaults = () => {
+        setDatasetState(INITIAL_DATASET);
+        setSummaryState(INITIAL_SUMMARY);
+        setCustomForecast(null);
+        setUploadText("");
+        setUploadError(null);
+        setIsUploadOpen(false);
+      };
+
+      const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setUploadText(event.target.result);
+        };
+        reader.onerror = () => {
+          setUploadError("Failed to read the file");
+        };
+        reader.readAsText(file);
+      };
+
+      return (
+        <div>
+          {/* Sticky Navigation */}
+          <nav className="navbar">
+            <div className="container nav-container">
+              <div className="logo-section">
+                {logoError ? (
+                  <div className="logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(37, 99, 235, 0.08)', borderRadius: '8px', padding: '8px' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-blue)' }}>
+                      <rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="rgba(37, 99, 235, 0.1)" stroke="#2563EB" />
+                      <line x1="12" y1="8" x2="12" y2="16" />
+                      <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                  </div>
+                ) : (
+                  <img 
+                    className="logo-img" 
+                    src="bccl_logo.jpg" 
+                    alt="BCCL+ Logo" 
+                    onError={() => setLogoError(true)} 
+                  />
+                )}
+                <div className="logo-text">
+                  BCCL<span className="logo-plus" style={{ color: 'var(--color-blue)' }}>+</span> Analytics
+                </div>
+              </div>
+              <div className="nav-meta">
+                <span>Asset: Bharat Coking Coal Limited, Dhanbad</span>
+                <div className="status-indicator">
+                  <span className="status-dot" style={{ backgroundColor: 'var(--color-blue)', boxShadow: '0 0 8px var(--color-blue)' }}></span>
+                  <span>Model Engine: Online</span>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          <main className="container">
+            {/* Hero Section */}
+            <section className="hero">
+              <div className="hero-grid">
+                <div>
+                  <h1 className="hero-title">
+                    Your Trusted <span style={{ color: 'var(--color-blue)' }}>Coal Analytics</span> Partner.
+                  </h1>
+                  <p className="hero-subtitle">
+                    Analyze coal production volumes, evaluate corporate earnings, and simulate forecast projection scenarios using our validated autoregressive modeling engines.
+                  </p>
+                  
+                  <HeroSearchBar onSearch={handleSearchSubmit} />
+
+                  <div className="hero-meta-row">
+                    <div className="hero-meta-badge">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-blue)' }}>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                      100% Data Verified
+                    </div>
+                    <div className="hero-meta-badge">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-blue)' }}>
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                      </svg>
+                      FY25 Model Complete
+                    </div>
+                    <div className="hero-meta-badge">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-blue)' }}>
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                      </svg>
+                      Scenario Calculator
+                    </div>
+                  </div>
+                </div>
+
+                <div className="hero-highlights-column">
+                  <div className="highlight-card">
+                    <span className="highlight-badge" style={{ color: 'var(--color-blue)', backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>FY 2025 Forecast Outlook</span>
+                    <div className="highlight-title" style={{ color: 'var(--color-blue)' }}>
+                      {metric === "production_mt" 
+                        ? `${formatValue(activeSummary?.forecast_value)} MT` 
+                        : `₹${formatValue(activeSummary?.forecast_value)} Cr`}
+                    </div>
+                    <div className="highlight-subtitle">
+                      Predicted {niceMetricName(metric)} using baseline parameters.
+                    </div>
+                    <button 
+                      className="highlight-btn"
+                      style={{ borderColor: 'var(--color-blue)', color: 'var(--color-blue)' }}
+                      onClick={() => {
+                        const elem = document.getElementById("simulator-section");
+                        if (elem) elem.scrollIntoView({ behavior: "smooth" });
+                      }}
+                    >
+                      Run Simulator Scenario
+                    </button>
+                  </div>
+
+                  <div className="highlight-card" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%)' }}>
+                    <span className="highlight-badge" style={{ color: 'var(--color-blue)', backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>Prescription-Style Upload</span>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '4px', color: 'var(--text-primary)' }}>Pipeline Data Upload</h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '18px' }}>
+                      Retrain regression models instantly by pasting csv datasets or loading report spreadsheets.
+                    </p>
+                    <button 
+                      className="highlight-btn"
+                      style={{ backgroundColor: 'var(--color-blue)', color: '#FFFFFF', border: 'none' }}
+                      style={{display: 'none'}}
+                    >
+                      Upload & Fit Models
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Features Strip */}
+            <section className="features-strip">
+              <div className="feature-item">
+                <div className="feature-icon" style={{ color: 'var(--color-blue)', backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                  <div className="feature-title">Revenue & Profit Analytics</div>
+                  <div className="feature-desc">Interactive profitability tracking and financial forecasting built directly from audited annual statements.</div>
+                </div>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon" style={{ color: 'var(--color-blue)', backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+                </div>
+                <div>
+                  <div className="feature-title">Cleaned Report Pipelines</div>
+                  <div className="feature-desc">Using advanced PDF scraper scripts (Camelot-py / pdfplumber) to parse messy table columns cleanly.</div>
+                </div>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon" style={{ color: 'var(--color-blue)', backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div>
+                  <div className="feature-title">Holdout Hold-Back Validation</div>
+                  <div className="feature-desc">Every model evaluated on actual testing data (FY 2023 & FY 2024) to publish real MAE/RMSE parameters.</div>
+                </div>
+              </div>
+            </section>
+
+            {/* "Shop by Category" Grid */}
+            <section>
+              <div className="section-header">
+                <div className="section-title-group">
+                  <h2>Analytics Directory</h2>
+                  <p>Explore different aspects of the BCCL forecasting engine</p>
+                </div>
+              </div>
+              
+              <div className="category-grid">
+                <div className={`category-card ${metric === "production_mt" ? "active" : ""}`} onClick={() => setMetric("production_mt")}>
+                  <div className="category-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                  <span className="category-card-title">Production</span>
+                </div>
+
+                <div className={`category-card ${metric === "profit_after_tax" ? "active" : ""}`} onClick={() => setMetric("profit_after_tax")}>
+                  <div className="category-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <span className="category-card-title">Profitability</span>
+                </div>
+
+                <div className="category-card" onClick={() => {
+                  const elem = document.getElementById("simulator-section");
+                  if (elem) elem.scrollIntoView({ behavior: "smooth" });
+                }}>
+                  <div className="category-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                  </div>
+                  <span className="category-card-title">Simulator</span>
+                </div>
+
+                <div className="category-card" onClick={() => {
+                  const elem = document.getElementById("model-evaluation-section");
+                  if (elem) elem.scrollIntoView({ behavior: "smooth" });
+                }}>
+                  <div className="category-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M22 12H12M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  </div>
+                  <span className="category-card-title">Verification</span>
+                </div>
+
+                <div className="category-card" onClick={() => {
+                  const elem = document.getElementById("dataset-table-section");
+                  if (elem) elem.scrollIntoView({ behavior: "smooth" });
+                }}>
+                  <div className="category-card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  </div>
+                  <span className="category-card-title">Cleaned Table</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Dashboard Visual Area */}
+            <section className="dashboard-layout">
+              <div className="main-panel">
+                <div className="chart-header">
+                  <div className="chart-title-block">
+                    <h3>{niceMetricName(metric)} Trend Line</h3>
+                    <p>Comparing historical reports with forecast horizons</p>
+                  </div>
+
+                  <div className="toggle-group" role="tablist">
+                    <button 
+                      className={`toggle-btn ${metric === "production_mt" ? "active" : ""}`} 
+                      onClick={() => setMetric("production_mt")}
+                    >
+                      Production
+                    </button>
+                    <button 
+                      className={`toggle-btn ${metric === "profit_after_tax" ? "active" : ""}`} 
+                      onClick={() => setMetric("profit_after_tax")}
+                    >
+                      Profit
+                    </button>
+                  </div>
+                </div>
+
+                <TrendChart metric={metric} datasetState={datasetState} summaryState={summaryState} customPoint={customForecast} />
+              </div>
+
+              <InsightPanel metric={metric} datasetState={datasetState} summaryState={summaryState} customPoint={customForecast} />
+            </section>
+
+            {/* Scenario Simulator */}
+            <SimulatorCard 
+              metric={metric} 
+              datasetState={datasetState}
+              summaryState={summaryState}
+              customPoint={customForecast}
+              onCommit={(pt) => setCustomForecast(pt)}
+              onReset={() => setCustomForecast(null)}
+            />
+
+            {/* Model Evaluation Table */}
+            <section className="table-section" id="model-evaluation-section">
+              <div className="section-title-group" style={{ marginBottom: '24px' }}>
+                <h2>Model Verification & Metrics</h2>
+                <p>Holdout testing errors (testing on FY 2023 & FY 2024 actuals)</p>
+              </div>
+
+              <div className="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Forecasting Metric</th>
+                      <th className="th-num">Training Rows</th>
+                      <th>Holdout Test Years</th>
+                      <th className="th-num">MAE (Mean Absolute Error)</th>
+                      <th className="th-num">RMSE (Root Mean Sq. Error)</th>
+                      <th className="th-num">Baseline Forecast</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {summaryState.map((item) => (
+                      <tr key={item.metric}>
+                        <td style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                          {niceMetricName(item.metric)}
+                        </td>
+                        <td className="td-num">{item.training_rows}</td>
+                        <td>{item.test_years.join(", ")}</td>
+                        <td className="td-num" style={{ color: 'var(--color-blue)' }}>
+                          {formatValue(item.mae)}
+                        </td>
+                        <td className="td-num">
+                          {formatValue(item.rmse)}
+                        </td>
+                        <td className="td-num" style={{ fontWeight: '600', color: 'var(--color-blue)' }}>
+                          FY {item.forecast_year} · {formatValue(item.forecast_value)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Cleaned Yearly Dataset Table */}
+            <section className="table-section" id="dataset-table-section">
+              <div className="table-controls">
+                <div className="section-title-group">
+                  <h2>Cleaned Yearly Dataset</h2>
+                  <p>Consolidated data parsed from BCCL official publications</p>
+                </div>
+                <input 
+                  type="text" 
+                  className="table-search" 
+                  placeholder="Search by year (e.g. 2023)..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              <div className="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Year</th>
+                      <th className="th-num">Coal Production (MT)</th>
+                      <th className="th-num">Sale Value (INR Cr)</th>
+                      <th className="th-num">Profit Before Tax (INR Cr)</th>
+                      <th className="th-num">Profit After Tax (INR Cr)</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {datasetState
+                      .filter((row) => {
+                        if (!searchQuery) return true;
+                        return row.year !== null && String(Math.round(row.year)).includes(searchQuery);
+                      })
+                      .map((row, index) => (
+                        <tr key={index}>
+                          <td style={{ fontWeight: '600' }}>
+                            {row.year === null ? "N/A" : Math.round(row.year)}
+                          </td>
+                          <td className="td-num">{formatValue(row.production_mt)}</td>
+                          <td className="td-num">{formatValue(row.sale_value_of_production)}</td>
+                          <td className="td-num">{formatValue(row.profit_before_tax)}</td>
+                          <td className="td-num">{formatValue(row.profit_after_tax)}</td>
+                          <td>
+                            <span className="badge-actual">Reported</span>
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+                {datasetState.filter((row) => {
+                  if (!searchQuery) return true;
+                  return row.year !== null && String(Math.round(row.year)).includes(searchQuery);
+                }).length === 0 && (
+                  <div className="empty-state">No matching records found in dataset.</div>
+                )}
+              </div>
+            </section>
+          </main>
+
+          {/* Upload Data Modal */}
+          {false && (
+            <div className="modal-backdrop">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h3 className="modal-title">Retrain Pipeline Model</h3>
+                  <button className="modal-close-btn" onClick={() => setIsUploadOpen(false)}>&times;</button>
+                </div>
+                
+                <form onSubmit={handleCSVSubmit} className="modal-body">
+                  <p className="modal-desc">
+                    Paste CSV format tables directly or upload a `.csv` file. 
+                    Columns required: <code>year</code>, <code>production_mt</code>, <code>profit_after_tax</code>.
+                  </p>
+                  
+                  <label className="modal-file-label">
+                    <span>Click to Select Dataset File (.csv)</span>
+                    <input 
+                      type="file" 
+                      accept=".csv" 
+                      style={{ display: 'none' }} 
+                      onChange={handleFileUpload} 
+                    />
+                  </label>
+
+                  <textarea
+                    className="modal-textarea"
+                    placeholder="year,production_mt,sale_value_of_production,profit_before_tax,profit_after_tax&#10;2021,24.66,6938.34,-1577.06,-1202.48&#10;2022,30.51,4631.635,191.31,111.62&#10;2023,36.179,12309.0,530.19,664.78&#10;2024,41.096,12800.0,2091.67,1564.46"
+                    value={uploadText}
+                    onChange={(e) => setUploadText(e.target.value)}
+                  />
+
+                  {uploadError && <div className="modal-error">▲ {uploadError}</div>}
+                  {uploadSuccess && <div className="modal-success">✔ Model compiled and updated successfully!</div>}
+
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+                    <button type="submit" className="sim-btn-primary" style={{ backgroundColor: 'var(--color-blue)' }}>
+                      Retrain Model
+                    </button>
+                    <button type="button" className="sim-btn-secondary" onClick={handleRestoreDefaults}>
+                      Restore Defaults
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <footer className="footer">
+            <div className="container">
+              <p>BCCL+ Coal Forecasting Tool · Consolidated from official annual financial reports.</p>
+              <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
+                Generated at: {generatedAt} · Data source: <a href="https://bcclweb.in/?page_id=25564" target="_blank" rel="noopener noreferrer">BCCL Official Publications</a>
+              </p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    /* Custom Search bar helper */
+    function HeroSearchBar({ onSearch }) {
+      const [input, setInput] = React.useState("");
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        onSearch(input);
+      };
+      return (
+        <form onSubmit={handleSubmit} className="hero-search-bar">
+          <input 
+            type="text" 
+            className="hero-search-input" 
+            placeholder="Search dataset year (e.g. 2024)..." 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button type="submit" className="hero-search-btn" style={{ backgroundColor: 'var(--color-blue)' }}>
+            Search
+          </button>
+        </form>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
