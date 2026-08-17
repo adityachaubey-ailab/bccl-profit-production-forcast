@@ -94,7 +94,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       background: 
         radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 100% 100%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
-        #090D16;
+        var(--bg-primary);
       color: var(--text-primary);
       font-family: var(--font-sans);
       min-height: 100vh;
@@ -146,7 +146,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .logo-plus {
-      color: #10B981;
+      color: var(--color-blue);
       font-weight: 800;
     }
 
@@ -167,9 +167,9 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     .status-dot {
       width: 8px;
       height: 8px;
-      background: #10B981;
+      background: var(--color-blue);
       border-radius: 50%;
-      box-shadow: 0 0 8px #10B981;
+      box-shadow: 0 0 8px var(--color-blue);
       animation: pulse 2s infinite;
     }
 
@@ -200,7 +200,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .hero-title span {
-      color: #10B981;
+      color: var(--color-blue);
     }
 
     .hero-subtitle {
@@ -233,7 +233,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .hero-search-btn {
-      background: #10B981;
+      background: var(--color-blue);
       border: none;
       color: #fff;
       font-weight: 600;
@@ -245,7 +245,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .hero-search-btn:hover {
-      background: #34D399;
+      background: var(--color-light-blue);
     }
 
     .hero-meta-row {
@@ -268,7 +268,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .hero-meta-badge svg {
-      color: #10B981;
+      color: var(--color-blue);
     }
 
     /* Highlights Cards Column */
@@ -293,7 +293,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     .highlight-badge {
       background: rgba(37, 99, 235, 0.05);
       border: 1px solid rgba(37, 99, 235, 0.1);
-      color: #10B981;
+      color: var(--color-blue);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       font-size: 0.75rem;
@@ -308,7 +308,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       font-size: 2.25rem;
       font-family: var(--font-display);
       margin-bottom: 4px;
-      color: #10B981;
+      color: var(--color-blue);
     }
 
     .highlight-subtitle {
@@ -319,8 +319,8 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
 
     .highlight-btn {
       background: transparent;
-      border: 1px solid #10B981;
-      color: #10B981;
+      border: 1px solid var(--color-blue);
+      color: var(--color-blue);
       font-weight: 600;
       padding: 12px 28px;
       border-radius: 999px;
@@ -331,7 +331,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .highlight-btn:hover {
-      background: #10B981;
+      background: var(--color-blue);
       color: #fff;
       box-shadow: 0 0 15px var(--color-blue-glow);
     }
@@ -352,7 +352,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .feature-icon {
-      color: #10B981;
+      color: var(--color-blue);
       flex-shrink: 0;
       background: rgba(37, 99, 235, 0.05);
       padding: 10px;
@@ -419,7 +419,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .category-card.active {
-      border-color: #10B981;
+      border-color: var(--color-blue);
       background: rgba(37, 99, 235, 0.03);
     }
 
@@ -508,7 +508,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .toggle-btn.active {
-      background: #10B981;
+      background: var(--color-blue);
       color: #fff;
     }
 
@@ -550,7 +550,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     .tooltip-val {
       font-size: 1.15rem;
       font-weight: 700;
-      color: #10B981;
+      color: var(--color-blue);
     }
 
     .tooltip-desc {
@@ -607,7 +607,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       gap: 4px;
     }
 
-    .trend-up { color: #10B981; }
+    .trend-up { color: var(--color-blue); }
     .trend-down { color: #EF4444; }
 
     .side-card-desc {
@@ -617,7 +617,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       background: rgba(37, 99, 235, 0.02);
       border-radius: var(--radius-sm);
       padding: 12px;
-      border-left: 3px solid #10B981;
+      border-left: 3px solid var(--color-blue);
     }
 
     /* Simulator CSS */
@@ -661,7 +661,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .slider-label-val {
-      color: #10B981;
+      color: var(--color-blue);
       font-weight: 600;
     }
 
@@ -679,7 +679,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       height: 16px;
       width: 16px;
       border-radius: 50%;
-      background: #10B981;
+      background: var(--color-blue);
       cursor: pointer;
       box-shadow: 0 0 10px var(--color-blue-glow);
       transition: all 0.2s ease;
@@ -687,7 +687,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
 
     input[type=range]::-webkit-slider-thumb:hover {
       transform: scale(1.2);
-      background: #34D399;
+      background: var(--color-light-blue);
     }
 
     .results-panel {
@@ -715,7 +715,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     .result-value-glowing {
       font-size: 2.5rem;
       font-weight: 700;
-      color: #10B981;
+      color: var(--color-blue);
       text-shadow: 0 0 20px rgba(37, 99, 235, 0.05);
       font-family: var(--font-sans);
     }
@@ -729,7 +729,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       border-radius: var(--radius-sm);
       word-break: break-all;
       margin-top: 16px;
-      border-left: 2px solid #10B981;
+      border-left: 2px solid var(--color-blue);
     }
 
     .simulator-actions {
@@ -740,7 +740,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
 
     .sim-btn-primary {
       flex: 1;
-      background: #10B981;
+      background: var(--color-blue);
       color: #fff;
       border: none;
       border-radius: var(--radius-sm);
@@ -752,7 +752,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .sim-btn-primary:hover {
-      background: #34D399;
+      background: var(--color-light-blue);
       box-shadow: 0 0 10px var(--color-blue-glow);
     }
 
@@ -820,7 +820,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     th {
-      color: #10B981;
+      color: var(--color-blue);
       text-transform: uppercase;
       font-size: 0.75rem;
       letter-spacing: 0.1em;
@@ -940,30 +940,30 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
       outline: none;
       font-family: monospace;
       font-size: 0.82rem;
-      background: #090D16;
+      background: var(--bg-primary);
       resize: none;
     }
 
     .modal-textarea:focus {
-      border-color: #10B981;
+      border-color: var(--color-blue);
     }
 
     .modal-file-label {
-      border: 1px dashed #10B981;
+      border: 1px dashed var(--color-blue);
       background: rgba(37, 99, 235, 0.01);
       border-radius: var(--radius-sm);
       padding: 16px;
       text-align: center;
       cursor: pointer;
       font-size: 0.88rem;
-      color: #10B981;
+      color: var(--color-blue);
       display: block;
       transition: all 0.2s ease;
     }
 
     .modal-file-label:hover {
       background: rgba(37, 99, 235, 0.03);
-      border-color: #34D399;
+      border-color: var(--color-light-blue);
     }
 
     .modal-error {
@@ -994,7 +994,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
     }
 
     .footer a {
-      color: #10B981;
+      color: var(--color-blue);
       text-decoration: none;
     }
 
