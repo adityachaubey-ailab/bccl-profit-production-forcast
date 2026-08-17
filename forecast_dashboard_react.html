@@ -1768,7 +1768,7 @@
                     <button 
                       className="highlight-btn"
                       style={{ backgroundColor: 'var(--color-blue)', color: '#FFFFFF', border: 'none' }}
-                      style={{display: 'none'}}
+                      onClick={() => setIsUploadOpen(true)}
                     >
                       Upload & Fit Models
                     </button>
@@ -2010,7 +2010,7 @@
           </main>
 
           {/* Upload Data Modal */}
-          {false && (
+          {isUploadOpen && (
             <div className="modal-backdrop">
               <div className="modal-content">
                 <div className="modal-header">

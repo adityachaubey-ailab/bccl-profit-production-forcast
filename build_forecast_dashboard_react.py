@@ -1815,7 +1815,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
                     <button 
                       className="highlight-btn"
                       style={{ backgroundColor: 'var(--color-blue)', color: '#FFFFFF', border: 'none' }}
-                      style={{display: 'none'}}
+                      onClick={() => setIsUploadOpen(true)}
                     >
                       Upload & Fit Models
                     </button>
@@ -2057,7 +2057,7 @@ def build_html(dataset: pd.DataFrame, summary: list[dict[str, object]]) -> str:
           </main>
 
           {/* Upload Data Modal */}
-          {false && (
+          {isUploadOpen && (
             <div className="modal-backdrop">
               <div className="modal-content">
                 <div className="modal-header">
